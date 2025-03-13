@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
+import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
@@ -53,7 +54,7 @@ class _OrderListTabState extends ConsumerState<OrderListTab> {
             child: Text('No ${widget.status} orders'),
           );
         }
-        
+
         return RefreshIndicator(
           onRefresh: () async {
             ref.read(ordersProvider.notifier).loadOrders();
@@ -62,7 +63,7 @@ class _OrderListTabState extends ConsumerState<OrderListTab> {
             itemCount: orders.length,
             itemBuilder: (context, index) {
               final order = orders[index];
-              return OrderListItem(order: order);
+              return OrderListItem(order: order, isInDelivery: widget.status == "ready");
             },
           ),
         );
@@ -77,29 +78,30 @@ class _OrderListTabState extends ConsumerState<OrderListTab> {
 
 class OrderListItem extends ConsumerWidget {
   final Order order;
+  bool isInDelivery = false;
 
-  const OrderListItem({super.key, required this.order});
+  OrderListItem({super.key, required this.order, required this.isInDelivery});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    
+
     // Calculate minutes since creation
     final minutesSinceCreation = DateTime.now().difference(order.createdTime).inMinutes;
-    
+
     return Container(
-        decoration: BoxDecoration(
-          color: Colors.white, // Default to white if no color provided
-          borderRadius:  BorderRadius.circular(8.0), // Default to rounded corners
-          boxShadow:  [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 6,
-              offset: const Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
+      decoration: BoxDecoration(
+        color: isInDelivery ? AppColors.primary: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: isInDelivery? AppColors.primary.withOpacity(0.1): Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: InkWell(
         onTap: () {
@@ -111,100 +113,117 @@ class OrderListItem extends ConsumerWidget {
           child: Row(
             children: [
               Expanded(
+                flex: 5,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal:18, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceVariant,
+                            color:isInDelivery?AppColors.colorWhite : AppColors.surfaceLight,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             '#${order.id}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.bold, color: AppColors.textLight
-                            ),
+                            style: theme.textTheme.bodySmall
+                                ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.textLight),
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                         order.customerName,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textPrimary,fontWeight: FontWeight.bold
+                        Flexible(
+                          child: Text(
+                            order.customerName ,
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color:isInDelivery?AppColors.colorWhite: AppColors.textPrimary, fontWeight: FontWeight.bold),
                           ),
                         ),
+                        const SizedBox(width: 2),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      order.customerMobile,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold, color: AppColors.textLight
-                      ),
+                     '+${order.customerMobile}',
+                      style:
+                          theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color:isInDelivery?AppColors.colorWhite : AppColors.textLight),
                     ),
                   ],
                 ),
               ),
 
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal:18, vertical: 4),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  '#${order.id}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold, color: AppColors.textLight
+              if (isInDelivery) ...[
+             Expanded(
+               flex: 3,
+               child: Row(
+                 mainAxisSize: MainAxisSize.max,
+                 mainAxisAlignment: MainAxisAlignment.start,
+                 children: [
+                   Container(
+                     padding: const EdgeInsets.all(8),
+                     decoration: const BoxDecoration(
+                       color: Colors.white,
+                       shape: BoxShape.circle,
+                     ),
+                     child: const Icon(
+                       Icons.delivery_dining,
+                       color: Color(0xFFFF5C00),
+                       size: 24,
+                     ),
+                   ),
+                   const SizedBox(width: 8),
+                   Flexible(
+                     child: Text(
+                       order.readyStatus,
+                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.colorWhite),
+                     ),
+                   ),
+               
+                 ],
+               ),
+             )
+              ] else ...[
+
+
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondarySurfaceLight,
+                    borderRadius: BorderRadius.circular(45),
+                  ),
+                  child: Text(
+                    getTimeString(order.createdTime),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.primary),
                   ),
                 ),
-              ),
-              // Timer circle
-               CircularPercentIndicator(
-                radius: 25.0,
-                animation: false,
-                animationDuration: 1200,
-                lineWidth: 5.0,
-                percent: 0.3,
-                center: Text(
-                  '$minutesSinceCreation',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
+                const SizedBox(width: 12),
+                // Timer circle
+                CircularPercentIndicator(
+                  radius: 25.0,
+                  animation: false,
+                  animationDuration: 1200,
+                  lineWidth: 5.0,
+                  percent: minutesSinceCreation/30>1.0?0.4:minutesSinceCreation/30,
+                  center: Text(
+                    '$minutesSinceCreation',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
+                  circularStrokeCap: CircularStrokeCap.butt,
+                  backgroundColor: AppColors.surface,
+                  progressColor: Colors.teal,
                 ),
-                circularStrokeCap: CircularStrokeCap.butt,
-                backgroundColor:AppColors.surface,
-                progressColor: Colors.teal,
-              ),
-              // Container(
-              //   width: 40,
-              //   height: 40,
-              //   decoration: BoxDecoration(
-              //     shape: BoxShape.circle,
-              //     border: Border.all(
-              //       color: theme.colorScheme.primary,
-              //       width: 2,
-              //     ),
-              //   ),
-              //   child: Center(
-              //     child: Text(
-              //       '$minutesSinceCreation',
-              //       style: theme.textTheme.titleMedium?.copyWith(
-              //         fontWeight: FontWeight.bold,
-              //         color: theme.colorScheme.primary,
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              ]
+
             ],
           ),
         ),
       ),
     );
   }
-}
 
+
+
+}

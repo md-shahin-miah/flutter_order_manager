@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/theme/app_colors.dart';
+import 'package:flutter_order_manager/core/utils/utils.dart';
+import 'package:flutter_order_manager/presentation/widgets/custom_button.dart';
+import 'package:flutter_order_manager/presentation/widgets/message_bubble.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'package:flutter_order_manager/domain/entities/item.dart';
@@ -15,7 +19,7 @@ class OrderDetailPage extends ConsumerStatefulWidget {
   final int orderId;
 
   const OrderDetailPage({
-    super.key, 
+    super.key,
     required this.order,
     required this.orderId,
   });
@@ -48,201 +52,186 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy - HH:mm');
     final theme = Theme.of(context);
-    
+    final minutesSinceCreation = DateTime.now().difference(_currentOrder.pickupTime).inMinutes;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Order #${_currentOrder.id}', style: theme.textTheme.headlineSmall),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              context.gotoEditOrder(_currentOrder);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              _showDeleteConfirmation(context);
-            },
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: Container(
+          color: AppColors.surface,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 30,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24),
+                child: Row(
                   children: [
-                    Text(
-                      'Order #${_currentOrder.id}',
-                      style: theme.textTheme.headlineSmall,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                        onPressed: () => context.goBack(),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    _buildInfoRow('Status', _currentOrder.status.toUpperCase(), theme),
-                    if (_currentOrder.status == 'ready')
-                      _buildInfoRow('Ready Status', _currentOrder.readyStatus, theme),
-                    _buildInfoRow('Created Time', dateFormat.format(_currentOrder.createdTime), theme),
-                    _buildInfoRow('Pickup Time', dateFormat.format(_currentOrder.pickupTime), theme),
-                    _buildInfoRow('Delivery Time', dateFormat.format(_currentOrder.deliveryTime), theme),
-                    _buildInfoRow('Customer Note', _currentOrder.customerNote, theme),
-                    InkWell(
-                      onTap: () => _callCustomer(_currentOrder.customerMobile),
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 120,
-                              child: Text(
-                                'Mobile:',
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Text(_currentOrder.customerMobile, style: theme.textTheme.bodyLarge),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.call, size: 16, color: Colors.blue),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _currentOrder.customerName,
+                            style: theme.textTheme.titleLarge,
+                          ),
+                          Text(
+                            _currentOrder.customerMobile,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondarySurfaceLight,
+                        borderRadius: BorderRadius.circular(45),
+                      ),
+                      child: Text(
+                        getTimeString(_currentOrder.createdTime),
+                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            _buildItemsSection(context, 'Items', _currentOrder.items, theme),
-            _buildTotalPrice(_currentOrder.items, theme),
-            const SizedBox(height: 16),
-            _buildActionButtons(context, theme),
-          ],
+              // Pickup Banner
+              _currentOrder.status == 'ongoing'
+                  ? Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      color: AppColors.secondarySurfaceLightDeep,
+                      child: Text(
+                        'Pickup in $minutesSinceCreation min ${getTimeString(_currentOrder.pickupTime)}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFFFF5C00),
+                          fontSize: 15,
+                        ),
+                      ),
+                    )
+                  : SizedBox(),
+
+              SizedBox(
+                height: 20,
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.selectedSurface,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '#${_currentOrder.id}',
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.textLight),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    MessageBubble(
+                      message: _currentOrder.customerNote.trim() == ''
+                          ? 'No onion please, I am very allergic. It would be best if no onion was handled.'
+                          : _currentOrder.customerNote,
+                      backgroundColor: Color(0xFFF8E8DD),
+                      textColor: Color(0xFF8A5A44),
+                    ),
+                    _buildItemsSection(context, _currentOrder.items, theme),
+                    _buildTotalPrice(_currentOrder.items, theme),
+                    const SizedBox(height: 16),
+                    _buildActionButtons(context, theme),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
+  Widget _buildItemsSection(BuildContext context, List<Item> items, ThemeData theme) {
+    return Card(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              '$label:',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          if (items.isEmpty)
+            Text('No items', style: theme.textTheme.bodyMedium)
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return _buildItemCard(item, theme);
+              },
             ),
-          ),
-          Expanded(child: Text(value, style: theme.textTheme.bodyLarge)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildItemsSection(BuildContext context, String title, List<Item> items, ThemeData theme) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            if (items.isEmpty)
-              Text('No items', style: theme.textTheme.bodyMedium)
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return _buildItemCard(item, theme);
-                },
-              ),
-          ],
-        ),
       ),
     );
   }
 
   Widget _buildItemCard(Item item, ThemeData theme) {
     final currencyFormat = NumberFormat.currency(symbol: '\$');
-    
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    item.name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Text(
-                  currencyFormat.format(item.price),
-                  style: theme.textTheme.titleMedium,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Quantity: ${item.quantity}',
-              style: theme.textTheme.bodyMedium,
-            ),
-            if (item.subItems.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Ingredients:',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            Expanded(
+              child: Text(
+                '${item.quantity} x ${item.name}',
+                style: theme.textTheme.titleMedium?.copyWith(),
               ),
-              const SizedBox(height: 4),
-              ...item.subItems.map((subItem) => Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 2),
+            ),
+          ],
+        ),
+        if (item.subItems.isNotEmpty) ...[
+          ...item.subItems.map((subItem) => Padding(
+                padding: const EdgeInsets.only(left: 0, bottom: 2),
                 child: Row(
                   children: [
-                    const Icon(Icons.circle, size: 8),
-                    const SizedBox(width: 8),
                     Text(
-                      '${subItem.name} (x${subItem.quantity})',
-                      style: theme.textTheme.bodyMedium,
+                      subItem.name,
+                      style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),
               )),
-            ],
-          ],
+        ],
+        Container(
+          margin: EdgeInsets.only(top: 8),
+          width: MediaQuery.of(context).size.width - 50,
+          height: 1,
+          color: AppColors.greyLight,
         ),
-      ),
+        SizedBox(
+          height: 10,
+        )
+      ],
     );
   }
 
@@ -252,14 +241,13 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-        ),
+      child: CustomButton(
+        text: buttonText,
         onPressed: () async {
           await _updateOrderStatus(nextStatus);
         },
-        child: Text(buttonText, style: theme.textTheme.titleMedium?.copyWith(color: Colors.white)),
+        color: AppColors.primary,
+        textColor: AppColors.colorWhite,
       ),
     );
   }
@@ -288,7 +276,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
   Widget _buildReadyStatusButton(String status, Color color, ThemeData theme) {
     bool isActive = _currentOrder.readyStatus == status;
-    
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: isActive ? color : null,
@@ -302,15 +290,15 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
   Future<void> _updateOrderStatus(String nextStatus) async {
     final updateOrderStatus = getIt<UpdateOrderStatusUseCase>();
     await updateOrderStatus.execute(_currentOrder, nextStatus);
-    
+    context.goBack();
     // Refresh the current order
     await _loadOrder();
-    
+
     // Refresh the lists
     ref.read(incomingOrdersProvider.notifier).loadOrders();
     ref.read(ongoingOrdersProvider.notifier).loadOrders();
     ref.read(readyOrdersProvider.notifier).loadOrders();
-    
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order marked as $nextStatus')),
@@ -321,13 +309,13 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
   Future<void> _updateReadyStatus(String readyStatus) async {
     final updateReadyStatus = getIt<UpdateReadyStatusUseCase>();
     await updateReadyStatus.execute(_currentOrder, readyStatus);
-    
+
     // Refresh the current order
     await _loadOrder();
-    
+
     // Refresh the ready orders list
     ref.read(readyOrdersProvider.notifier).loadOrders();
-    
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order status updated to $readyStatus')),
@@ -353,7 +341,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
   void _showDeleteConfirmation(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -368,12 +356,12 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
             onPressed: () async {
               final deleteOrder = getIt<DeleteOrderUseCase>();
               await deleteOrder.execute(_currentOrder.id!);
-              
+
               // Refresh the lists
               ref.read(incomingOrdersProvider.notifier).loadOrders();
               ref.read(ongoingOrdersProvider.notifier).loadOrders();
               ref.read(readyOrdersProvider.notifier).loadOrders();
-              
+
               if (context.mounted) {
                 Navigator.pop(context); // Close dialog
                 context.gotoHomePage(); // Go back to home
@@ -391,18 +379,17 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
   // Add a method to display the total price of the order
   Widget _buildTotalPrice(List<Item> items, ThemeData theme) {
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
     double total = 0;
-    
+
     // Calculate total price
     for (var item in items) {
       total += item.price * item.quantity;
     }
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             'Total: ',
@@ -411,7 +398,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
             ),
           ),
           Text(
-            currencyFormat.format(total),
+            '${total.toStringAsFixed(2)}€',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.primary,
@@ -428,30 +415,23 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            onPressed: () => _updateOrderStatus('ongoing'),
-            child: Text(
-              'Next',
-              style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
-            ),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade100,
-              foregroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            onPressed: () => _updateOrderStatus('rejected'),
-            child: Text(
-              'Reject',
-              style: theme.textTheme.titleMedium,
-            ),
-          ),
+          CustomButton(
+              text: 'Next',
+              onPressed: () async {
+                await _updateOrderStatus('ongoing');
+                context.goBack();
+              },
+              color: AppColors.primary,
+              textColor: AppColors.colorWhite),
+          const SizedBox(height: 16),
+          CustomButton(
+              text: 'Reject',
+              onPressed: () async {
+                await _updateOrderStatus('rejected');
+                context.goBack();
+              },
+              color: Colors.red.shade100,
+              textColor: AppColors.textRed),
         ],
       );
     } else if (_currentOrder.status != 'ready' && _currentOrder.status != 'rejected') {
@@ -459,8 +439,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
     } else if (_currentOrder.status == 'ready') {
       return _buildReadyStatusButtons(context, theme);
     }
-    
+
     return const SizedBox.shrink();
   }
 }
-

@@ -208,7 +208,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ref.read(rushModeProvider.notifier).state = !rushMode;
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
                       color: rushMode ? AppColors.selectedSurface : AppColors.surface,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -236,7 +236,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     },
                     child: Container(
                       color: !rushMode ? AppColors.selectedSurface : AppColors.surface,
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
