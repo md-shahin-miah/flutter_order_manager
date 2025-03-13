@@ -5,7 +5,8 @@ A comprehensive order management application built with Flutter, following clean
 #Overview
 
 Flutter Order Manager is a mobile application designed for restaurants and food delivery services to manage their orders efficiently. The app allows tracking orders through different stages (Incoming, Ongoing, Ready, Rejected), managing customer information, and handling order details.
-Features
+
+#Features
 
     Order Status Management: Track orders through their lifecycle (Incoming → Ongoing → Ready)
     Order status maintain: All status is updateble (Using SQflite)
