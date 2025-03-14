@@ -2,7 +2,7 @@ import UIKit
 import Flutter
 import AVFoundation
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   private var audioPlayer: AVAudioPlayer?
   private var isLooping = false
@@ -35,7 +35,7 @@ import AVFoundation
   }
   
   private func playOrderCreatedSound() {
-    guard let soundURL = Bundle.main.url(forResource: "order_created", withExtension: "mp3") else {
+    guard let soundURL = Bundle.main.url(forResource: "alarm", withExtension: "mp3") else {
       print("Sound file not found")
       return
     }
