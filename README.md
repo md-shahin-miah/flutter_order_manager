@@ -9,15 +9,15 @@ Flutter Order Manager is a mobile application designed for restaurants and food 
 #Features
 
     Order Status Management: Track orders through their lifecycle (Incoming → Ongoing → Ready)
-    Order status maintain: All status is updatable (Using SQflite)
+    Order status maintain: All status is updatable (Using SQLite)
         1.Saving time to local db when creating oreder - Created time (Current date time), Pickup time (30 minutes from created time),Delivery time (30 minutes from Pickup time)
-        2.Order status ongoing to ready, changing with time and saving to Sqflite
+        2.Order status ongoing to ready, changing with time and saving to SQLite
     Real-time Order Timer: Visual countdown showing how long orders have been in the system
     Order Details: View comprehensive order information including items, prices, and customer notes
     Customer Management: Store and access customer contact information
     Sound Notifications: Audio alerts for new orders using native platform integration
     Overlay blink: A view with sound on the bottom will blink until user click it (Sound and view will close when user clicked)
-    Order Rejection: Ability to reject orders with appropriate status tracking using Sqflite
+    Order Rejection: Ability to reject orders with appropriate status tracking using SQLite
     
 
 #Architecture
