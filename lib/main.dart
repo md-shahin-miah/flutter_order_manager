@@ -91,20 +91,10 @@ class BottomSheetDemo extends StatelessWidget {
               child: const Text('Time Selection Sheet'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _showOrderDetailsSheet(context),
-              child: const Text('Order Details Sheet'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _showPickupConfirmationSheet(context),
-              child: const Text('Pickup Confirmation Sheet'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _showCountdownTimerSheet(context),
-              child: const Text('Countdown Timer Sheet'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () => _showOrderDetailsSheet(context),
+            //   child: const Text('Order Details Sheet'),
+            // ),
           ],
         ),
       ),
@@ -120,30 +110,7 @@ class BottomSheetDemo extends StatelessWidget {
     );
   }
 
-  void _showOrderDetailsSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const OrderDetailsSheet(),
-    );
-  }
 
-  void _showPickupConfirmationSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const PickupConfirmationSheet(),
-    );
-  }
 
-  void _showCountdownTimerSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const CountdownTimerSheet(),
-    );
-  }
+
 }

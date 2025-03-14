@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
+import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/custom_bottom_sheet.dart';
+import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/order_details_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
@@ -106,7 +108,14 @@ class OrderListItem extends ConsumerWidget {
       child: InkWell(
         onTap: () {
           ref.read(selectedOrderProvider.notifier).state = order;
-          context.push('/order/${order.id}', extra: order);
+
+          if(isInDelivery){
+            _showBottomSheet(context,order);
+          }
+          else{
+            context.push('/order/${order.id}', extra: order);
+
+          }
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -223,7 +232,24 @@ class OrderListItem extends ConsumerWidget {
       ),
     );
   }
-
-
+  void _showBottomSheet(BuildContext context, Order order) {
+    CustomBottomSheet.show(
+      context: context,
+      heightFactor: 0.7,
+      child: OrderDetailsSheet(order),
+    );
+  }
+  // void _showOrderDetailsSheet(BuildContext context, Order order) {
+  //   showModalBottomSheet(
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(30)), // Adjust the radius as needed
+  //     ),
+  //     context: context,
+  //     isScrollControlled: false,
+  //     backgroundColor: Colors.transparent,
+  //     isDismissible: true,
+  //     builder: (context) =>  OrderDetailsSheet(order),
+  //   );
+  // }
 
 }

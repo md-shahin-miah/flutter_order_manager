@@ -92,6 +92,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         items: items,
         createdTime: createdTime,
         deliveryTime: deliveryTime,
+        orderMakingFinishTime: pickupTime,
         customerNote: 'Automatically generated order',
         pickupTime: pickupTime,
         status: 'incoming',

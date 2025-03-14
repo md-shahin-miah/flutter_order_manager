@@ -6,6 +6,7 @@ class Order {
   final List<Item> items;
   final DateTime createdTime; // Added created time
   final DateTime deliveryTime;
+  late DateTime orderMakingFinishTime;
   final String customerNote;
   final DateTime pickupTime;
   final String status; // "incoming", "ongoing", "ready", "rejected"
@@ -18,6 +19,7 @@ class Order {
     required this.items,
     required this.createdTime, // Added created time
     required this.deliveryTime,
+    required this.orderMakingFinishTime,
     required this.customerNote,
     required this.pickupTime,
     required this.status,
@@ -41,8 +43,10 @@ class Order {
     return Order(
       id: id ?? this.id,
       items: items ?? this.items,
-      createdTime: createdTime ?? this.createdTime, // Added created time
+      createdTime: createdTime ?? this.createdTime,
+      // Added created time
       deliveryTime: deliveryTime ?? this.deliveryTime,
+      orderMakingFinishTime: orderMakingFinishTime?? this.orderMakingFinishTime,
       customerNote: customerNote ?? this.customerNote,
       pickupTime: pickupTime ?? this.pickupTime,
       status: status ?? this.status,
@@ -72,6 +76,7 @@ class Order {
       'items': itemsJson,
       'createdTime': createdTime.toIso8601String(), // Added created time
       'deliveryTime': deliveryTime.toIso8601String(),
+      'orderMakingFinishTime': orderMakingFinishTime?.toIso8601String(),
       'customerNote': customerNote,
       'pickupTime': pickupTime.toIso8601String(),
       'status': status,
@@ -85,10 +90,10 @@ class Order {
     return Order(
       id: map['id'],
       items: parseItems(map['items']),
-      createdTime: map['createdTime'] != null 
-          ? DateTime.parse(map['createdTime']) 
-          : DateTime.now(), // Added created time with fallback
+      createdTime: map['createdTime'] != null ? DateTime.parse(map['createdTime']) : DateTime.now(),
+      // Added created time with fallback
       deliveryTime: DateTime.parse(map['deliveryTime']),
+      orderMakingFinishTime: DateTime.parse(map['orderMakingFinishTime']),
       customerNote: map['customerNote'],
       pickupTime: DateTime.parse(map['pickupTime']),
       status: map['status'],
@@ -98,4 +103,3 @@ class Order {
     );
   }
 }
-

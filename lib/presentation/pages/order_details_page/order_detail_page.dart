@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
+import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/countdown_timer_sheet.dart';
+import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/custom_bottom_sheet.dart';
+import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/order_details_sheet.dart';
+import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/pickup_confirmation_sheet.dart';
+import 'package:flutter_order_manager/presentation/widgets/cart_item_widget.dart';
 import 'package:flutter_order_manager/presentation/widgets/custom_button.dart';
 import 'package:flutter_order_manager/presentation/widgets/message_bubble.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'package:flutter_order_manager/domain/entities/item.dart';
-import 'package:flutter_order_manager/domain/entities/sub_item.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_order_manager/core/di/service_locator.dart';
 import 'package:flutter_order_manager/domain/usecases/order_usecases.dart';
 import 'package:flutter_order_manager/core/router/navigation_extension.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class OrderDetailPage extends ConsumerStatefulWidget {
   final Order order;
@@ -36,6 +39,14 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
     super.initState();
     _currentOrder = widget.order;
     _loadOrder();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_currentOrder.status == "incoming") {
+        _showBottomSheetTimerInComing(context, _currentOrder);
+      }
+      if (_currentOrder.status == "ongoing") {
+        _showBottomSheetPickupConfirmOngoing(context, _currentOrder);
+      }
+    });
   }
 
   Future<void> _loadOrder() async {
@@ -88,7 +99,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
                             style: theme.textTheme.titleLarge,
                           ),
                           Text(
-                            _currentOrder.customerMobile,
+                            '+${_currentOrder.customerMobile}',
                             style: theme.textTheme.bodySmall,
                           ),
                         ],
@@ -153,10 +164,10 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
                       message: _currentOrder.customerNote.trim() == ''
                           ? 'No onion please, I am very allergic. It would be best if no onion was handled.'
                           : _currentOrder.customerNote,
-                      backgroundColor: Color(0xFFF8E8DD),
-                      textColor: Color(0xFF8A5A44),
+                      backgroundColor: AppColors.secondarySurface,
+                      textColor: AppColors.textPrimary,
                     ),
-                    _buildItemsSection(context, _currentOrder.items, theme),
+                    buildItemsSection(context, _currentOrder.items, theme),
                     _buildTotalPrice(_currentOrder.items, theme),
                     const SizedBox(height: 16),
                     _buildActionButtons(context, theme),
@@ -167,71 +178,6 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildItemsSection(BuildContext context, List<Item> items, ThemeData theme) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (items.isEmpty)
-            Text('No items', style: theme.textTheme.bodyMedium)
-          else
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return _buildItemCard(item, theme);
-              },
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildItemCard(Item item, ThemeData theme) {
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                '${item.quantity} x ${item.name}',
-                style: theme.textTheme.titleMedium?.copyWith(),
-              ),
-            ),
-          ],
-        ),
-        if (item.subItems.isNotEmpty) ...[
-          ...item.subItems.map((subItem) => Padding(
-                padding: const EdgeInsets.only(left: 0, bottom: 2),
-                child: Row(
-                  children: [
-                    Text(
-                      subItem.name,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              )),
-        ],
-        Container(
-          margin: EdgeInsets.only(top: 8),
-          width: MediaQuery.of(context).size.width - 50,
-          height: 1,
-          color: AppColors.greyLight,
-        ),
-        SizedBox(
-          height: 10,
-        )
-      ],
     );
   }
 
@@ -289,6 +235,12 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
   Future<void> _updateOrderStatus(String nextStatus) async {
     final updateOrderStatus = getIt<UpdateOrderStatusUseCase>();
+
+    if (nextStatus == 'ready') {
+      final createdTime = DateTime.now();
+      _currentOrder.orderMakingFinishTime = createdTime;
+    }
+
     await updateOrderStatus.execute(_currentOrder, nextStatus);
     context.goBack();
     // Refresh the current order
@@ -321,60 +273,6 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
         SnackBar(content: Text('Order status updated to $readyStatus')),
       );
     }
-  }
-
-  Future<void> _callCustomer(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
-    if (await canLaunchUrl(launchUri)) {
-      await launchUrl(launchUri);
-    } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch phone dialer')),
-        );
-      }
-    }
-  }
-
-  void _showDeleteConfirmation(BuildContext context) {
-    final theme = Theme.of(context);
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Delete Order', style: theme.textTheme.titleLarge),
-        content: Text('Are you sure you want to delete this order?', style: theme.textTheme.bodyLarge),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: theme.textTheme.labelLarge),
-          ),
-          TextButton(
-            onPressed: () async {
-              final deleteOrder = getIt<DeleteOrderUseCase>();
-              await deleteOrder.execute(_currentOrder.id!);
-
-              // Refresh the lists
-              ref.read(incomingOrdersProvider.notifier).loadOrders();
-              ref.read(ongoingOrdersProvider.notifier).loadOrders();
-              ref.read(readyOrdersProvider.notifier).loadOrders();
-
-              if (context.mounted) {
-                Navigator.pop(context); // Close dialog
-                context.gotoHomePage(); // Go back to home
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Order deleted')),
-                );
-              }
-            },
-            child: Text('Delete', style: theme.textTheme.labelLarge?.copyWith(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
   }
 
   // Add a method to display the total price of the order
@@ -441,5 +339,21 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
     }
 
     return const SizedBox.shrink();
+  }
+
+  void _showBottomSheetTimerInComing(BuildContext context, Order order) {
+    CustomBottomSheet.show(
+      context: context,
+      heightFactor: 0.4,
+      child: CountdownTimerSheet(order),
+    );
+  }
+
+  void _showBottomSheetPickupConfirmOngoing(BuildContext context, Order order) {
+    CustomBottomSheet.show(
+      context: context,
+      heightFactor: 0.5,
+      child: PickupConfirmationSheet(order),
+    );
   }
 }

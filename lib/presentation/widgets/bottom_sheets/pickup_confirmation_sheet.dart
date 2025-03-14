@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'base_bottom_sheet.dart';
 
 class PickupConfirmationSheet extends StatelessWidget {
-  const PickupConfirmationSheet({Key? key}) : super(key: key);
+  Order order;
+
+  PickupConfirmationSheet(this.order, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -82,4 +85,3 @@ class PickupConfirmationSheet extends StatelessWidget {
     );
   }
 }
-

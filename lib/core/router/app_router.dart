@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
-import 'package:flutter_order_manager/presentation/pages/home_page.dart';
-import 'package:flutter_order_manager/presentation/pages/order_detail_page.dart';
+import 'package:flutter_order_manager/presentation/pages/home_page/home_page.dart';
+import 'package:flutter_order_manager/presentation/pages/order_details_page/order_detail_page.dart';
 import 'package:flutter_order_manager/presentation/pages/order_form_page.dart';
 import 'package:flutter_order_manager/core/router/route_names.dart';
 

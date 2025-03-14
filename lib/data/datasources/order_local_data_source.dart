@@ -29,6 +29,7 @@ class OrderLocalDataSource {
         items TEXT,
         createdTime TEXT,
         deliveryTime TEXT,
+        orderMakingFinishTime TEXT,
         customerNote TEXT,
         pickupTime TEXT,
         status TEXT,

@@ -209,6 +209,7 @@ class _OrderFormPageState extends ConsumerState<OrderFormPage> {
           id: widget.order?.id,
           items: items,
           createdTime: _createdTime,
+          orderMakingFinishTime: _pickupTime,
           deliveryTime: _deliveryTime,
           customerNote: _customerNoteController.text,
           pickupTime: _pickupTime,

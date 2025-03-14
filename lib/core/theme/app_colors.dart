@@ -14,6 +14,7 @@ class AppColors {
   static const selectedSurface = Color(0xFFede8e5 );
   static const secondarySurfaceLight = Color(0xFFFEEADD);
   static const secondarySurfaceLightDeep = Color(0xFFFEEADD);
+  static const secondarySurface = Color(0xFFFAE9DD);
 
   // Text Colors
   static const textPrimary = Color(0xFF1F2937);
