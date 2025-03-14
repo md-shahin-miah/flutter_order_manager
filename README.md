@@ -16,6 +16,7 @@ Flutter Order Manager is a mobile application designed for restaurants and food 
     Order Details: View comprehensive order information including items, prices, and customer notes
     Customer Management: Store and access customer contact information
     Sound Notifications: Audio alerts for new orders using native platform integration
+    Overlay blink: A view with sound on the bottom will blink until user click it (Sound and view will close when user clicked)
     Order Rejection: Ability to reject orders with appropriate status tracking
     
 
