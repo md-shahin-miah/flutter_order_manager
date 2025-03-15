@@ -46,10 +46,7 @@ class MessageBubble extends StatelessWidget {
           padding: padding,
           child: Text(
             message,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 15,
-            ),
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ),
       ],

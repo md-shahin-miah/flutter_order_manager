@@ -56,3 +56,7 @@ final rejectedOrdersProvider = StateNotifierProvider<OrdersNotifier, AsyncValue<
 // Selected order provider
 final selectedOrderProvider = StateProvider<Order?>((ref) => null);
 
+final orderByIdProvider = FutureProvider.family<Order?, int>((ref, orderId) async {
+  final getOrderById = getIt<GetOrderByIdUseCase>();
+  return await getOrderById.execute(orderId);
+});

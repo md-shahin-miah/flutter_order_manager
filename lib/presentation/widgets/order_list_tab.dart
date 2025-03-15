@@ -235,21 +235,10 @@ class OrderListItem extends ConsumerWidget {
   void _showBottomSheet(BuildContext context, Order order) {
     CustomBottomSheet.show(
       context: context,
-      heightFactor: 0.7,
+      heightFactor: 0.35,
       child: OrderDetailsSheet(order),
     );
   }
-  // void _showOrderDetailsSheet(BuildContext context, Order order) {
-  //   showModalBottomSheet(
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(30)), // Adjust the radius as needed
-  //     ),
-  //     context: context,
-  //     isScrollControlled: false,
-  //     backgroundColor: Colors.transparent,
-  //     isDismissible: true,
-  //     builder: (context) =>  OrderDetailsSheet(order),
-  //   );
-  // }
+
 
 }

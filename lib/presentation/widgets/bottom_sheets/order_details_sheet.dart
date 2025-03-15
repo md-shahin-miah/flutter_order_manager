@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/router/navigation_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
@@ -18,6 +19,7 @@ class OrderDetailsSheet extends StatelessWidget {
     final minutesWillPickup = DateTime.now().difference(order.pickupTime).inMinutes.abs();
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -28,7 +30,7 @@ class OrderDetailsSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.goBack,
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -42,25 +44,72 @@ class OrderDetailsSheet extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.selectedSurface,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '#${order.id}',
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.textLight),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                order.customerName,
+                                style: theme.textTheme.titleLarge,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                      Text(
+                        '+${order.customerMobile}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  MessageBubble(
+                    message: order.customerNote.trim() == ''
+                        ? 'No onion please, I am very allergic. It would be best if no onion was handled.'
+                        : order.customerNote,
+                    backgroundColor: AppColors.secondarySurface,
+                    textColor: AppColors.textPrimary,
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.selectedSurface,
-                            borderRadius: BorderRadius.circular(4),
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(
-                            '#${order.id}',
-                            style: theme.textTheme.bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.textLight),
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -68,100 +117,53 @@ class OrderDetailsSheet extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              order.customerName,
-                              style: theme.textTheme.titleLarge,
+                              '$minutesSinceReady min ago',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.green,
+                              ),
+                            ),
+                            Text(
+                              "(${getTimeString(order.orderMakingFinishTime)})",
+                              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                            )
+                          ],
+                        ),
+                        const Spacer(),
+                        const Icon(
+                          Icons.delivery_dining,
+                          color: Colors.deepOrange,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Pickup in',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              '$minutesWillPickup min (${getTimeString(order.pickupTime)})',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.deepOrange,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      '+${order.customerMobile}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                MessageBubble(
-                  message: order.customerNote.trim() == ''
-                      ? 'No onion please, I am very allergic. It would be best if no onion was handled.'
-                      : order.customerNote,
-                  backgroundColor: AppColors.secondarySurface,
-                  textColor: AppColors.textPrimary,
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '$minutesSinceReady min ago',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.green,
-                            ),
-                          ),
-                          Text(
-                            "(${getTimeString(order.orderMakingFinishTime)})",
-                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                          )
-                        ],
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        Icons.delivery_dining,
-                        color: Colors.deepOrange,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Pickup in',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          Text(
-                            '$minutesWillPickup min (${getTimeString(order.pickupTime)})',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.deepOrange,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
-                ),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: buildItemsSection(context, order.items, theme),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  buildItemsSection(context, order.items, theme,false),
+                ],
+              ),
             ),
           ),
         )

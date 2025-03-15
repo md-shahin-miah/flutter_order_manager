@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/theme/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -20,7 +21,7 @@ class CustomButton extends StatelessWidget {
       width: double.infinity,
       height: 56, // Fixed height for consistency
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.3),
@@ -39,12 +40,7 @@ class CustomButton extends StatelessWidget {
           child: Center(
             child: Text(
                     text,
-                    style:  TextStyle(
-                      color: textColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: textColor),
                   ),
           ),
         ),

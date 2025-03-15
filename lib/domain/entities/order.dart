@@ -5,10 +5,10 @@ class Order {
   final int? id;
   final List<Item> items;
   final DateTime createdTime; // Added created time
-  final DateTime deliveryTime;
+  late DateTime deliveryTime;
   late DateTime orderMakingFinishTime;
   final String customerNote;
-  final DateTime pickupTime;
+  late DateTime pickupTime;
   final String status; // "incoming", "ongoing", "ready", "rejected"
   final String readyStatus; // "Pickup in", "In Delivery", "Delivered" (only for ready orders)
   final String customerMobile; // Added customer mobile number

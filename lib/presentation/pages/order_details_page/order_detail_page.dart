@@ -32,38 +32,56 @@ class OrderDetailPage extends ConsumerStatefulWidget {
 }
 
 class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
-  late Order _currentOrder;
+  // late Order _currentOrder;
 
   @override
   void initState() {
     super.initState();
-    _currentOrder = widget.order;
-    _loadOrder();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_currentOrder.status == "incoming") {
-        _showBottomSheetTimerInComing(context, _currentOrder);
-      }
-      if (_currentOrder.status == "ongoing") {
-        _showBottomSheetPickupConfirmOngoing(context, _currentOrder);
+      if (widget.order.status == "ongoing") {
+        _showBottomSheet(context, widget.order);
       }
     });
+
   }
 
-  Future<void> _loadOrder() async {
-    final getOrderById = getIt<GetOrderByIdUseCase>();
-    final order = await getOrderById.execute(widget.orderId);
-    if (order != null) {
-      setState(() {
-        _currentOrder = order;
-      });
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy - HH:mm');
+
+    final orderAsync = ref.watch(orderByIdProvider(widget.orderId));
+    return orderAsync.when(
+      data: (currentOrder) {
+        if (currentOrder == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Order Details')),
+            body: const Center(child: Text('Order not found')),
+          );
+        }
+
+        return _buildOrderDetails(context, ref, currentOrder);
+      },
+      loading: () =>
+          Scaffold(
+            appBar: AppBar(title: const Text('Order Details')),
+            body: const Center(child: CircularProgressIndicator()),
+          ),
+      error: (error, stackTrace) =>
+          Scaffold(
+            appBar: AppBar(title: const Text('Order Details')),
+            body: Center(child: Text('Error: $error')),
+          ),
+    );
+  }
+
+  Widget _buildOrderDetails(BuildContext context, WidgetRef ref, Order _currentOrder) {
     final theme = Theme.of(context);
-    final minutesSinceCreation = DateTime.now().difference(_currentOrder.pickupTime).inMinutes;
+    final minutesSinceCreation = DateTime
+        .now()
+        .difference(_currentOrder.pickupTime)
+        .inMinutes.abs();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -113,7 +131,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
                       ),
                       child: Text(
                         getTimeString(_currentOrder.createdTime),
-                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+                        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.primary),
                       ),
                     ),
                   ],
@@ -122,18 +140,18 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
               // Pickup Banner
               _currentOrder.status == 'ongoing'
                   ? Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      color: AppColors.secondarySurfaceLightDeep,
-                      child: Text(
-                        'Pickup in $minutesSinceCreation min ${getTimeString(_currentOrder.pickupTime)}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFFFF5C00),
-                          fontSize: 15,
-                        ),
-                      ),
-                    )
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                color: AppColors.secondarySurfaceLightDeep,
+                child: Text(
+                  'Pickup in $minutesSinceCreation min ${getTimeString(_currentOrder.pickupTime)}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFFF5C00),
+                    fontSize: 15,
+                  ),
+                ),
+              )
                   : SizedBox(),
 
               SizedBox(
@@ -167,10 +185,10 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
                       backgroundColor: AppColors.secondarySurface,
                       textColor: AppColors.textPrimary,
                     ),
-                    buildItemsSection(context, _currentOrder.items, theme),
+                    buildItemsSection(context, _currentOrder.items, theme, true),
                     _buildTotalPrice(_currentOrder.items, theme),
                     const SizedBox(height: 16),
-                    _buildActionButtons(context, theme),
+                    _buildActionButtons(context, theme,_currentOrder),
                   ],
                 ),
               )
@@ -181,16 +199,16 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
     );
   }
 
-  Widget _buildStatusUpdateButton(BuildContext context, ThemeData theme) {
+  Widget _buildStatusUpdateButton(BuildContext context, ThemeData theme, _currentOrder) {
     String nextStatus = _currentOrder.status == 'incoming' ? 'ongoing' : 'ready';
-    String buttonText = 'Mark as ${nextStatus.toUpperCase()}';
+    // String buttonText = 'Mark as ${nextStatus.toUpperCase()}';
 
     return SizedBox(
       width: double.infinity,
       child: CustomButton(
-        text: buttonText,
+        text: 'Ready for delivery',
         onPressed: () async {
-          await _updateOrderStatus(nextStatus);
+          await _updateOrderStatus(nextStatus,_currentOrder);
         },
         color: AppColors.primary,
         textColor: AppColors.colorWhite,
@@ -198,7 +216,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
     );
   }
 
-  Widget _buildReadyStatusButtons(BuildContext context, ThemeData theme) {
+  Widget _buildReadyStatusButtons(BuildContext context, ThemeData theme, currentOrder) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -211,16 +229,16 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _buildReadyStatusButton('Pickup in', Colors.blue, theme),
-            _buildReadyStatusButton('In Delivery', Colors.orange, theme),
-            _buildReadyStatusButton('Delivered', Colors.green, theme),
+            _buildReadyStatusButton('Pickup in', Colors.blue, theme,currentOrder),
+            _buildReadyStatusButton('In Delivery', Colors.orange, theme,currentOrder),
+            _buildReadyStatusButton('Delivered', Colors.green, theme,currentOrder),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildReadyStatusButton(String status, Color color, ThemeData theme) {
+  Widget _buildReadyStatusButton(String status, Color color, ThemeData theme, _currentOrder) {
     bool isActive = _currentOrder.readyStatus == status;
 
     return ElevatedButton(
@@ -228,12 +246,12 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
         backgroundColor: isActive ? color : null,
         foregroundColor: isActive ? Colors.white : null,
       ),
-      onPressed: isActive ? null : () => _updateReadyStatus(status),
+      onPressed: isActive ? null : () => _updateReadyStatus(status,_currentOrder),
       child: Text(status, style: theme.textTheme.labelLarge),
     );
   }
 
-  Future<void> _updateOrderStatus(String nextStatus) async {
+  Future<void> _updateOrderStatus(String nextStatus, Order _currentOrder) async {
     final updateOrderStatus = getIt<UpdateOrderStatusUseCase>();
 
     if (nextStatus == 'ready') {
@@ -242,9 +260,11 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
     }
 
     await updateOrderStatus.execute(_currentOrder, nextStatus);
-    context.goBack();
-    // Refresh the current order
-    await _loadOrder();
+    ref.invalidate(orderByIdProvider(_currentOrder.id!));
+    if (nextStatus == 'ready') {
+      context.goBack();
+    }
+
 
     // Refresh the lists
     ref.read(incomingOrdersProvider.notifier).loadOrders();
@@ -253,17 +273,17 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Order marked as $nextStatus')),
+        SnackBar(content: Text('Order moved to $nextStatus')),
       );
     }
   }
 
-  Future<void> _updateReadyStatus(String readyStatus) async {
+  Future<void> _updateReadyStatus(String readyStatus, currentOrder) async {
     final updateReadyStatus = getIt<UpdateReadyStatusUseCase>();
-    await updateReadyStatus.execute(_currentOrder, readyStatus);
+    await updateReadyStatus.execute(currentOrder, readyStatus);
 
     // Refresh the current order
-    await _loadOrder();
+    // await _loadOrder();
 
     // Refresh the ready orders list
     ref.read(readyOrdersProvider.notifier).loadOrders();
@@ -299,7 +319,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
             '${total.toStringAsFixed(2)}€',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
+              color: AppColors.textPrimary,
             ),
           ),
         ],
@@ -308,46 +328,42 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
   }
 
   // Update the buttons section in OrderDetailPage
-  Widget _buildActionButtons(BuildContext context, ThemeData theme) {
-    if (_currentOrder.status == 'incoming') {
+  Widget _buildActionButtons(BuildContext context, ThemeData theme, Order currentOrder) {
+    if (currentOrder.status == 'incoming') {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomButton(
               text: 'Next',
               onPressed: () async {
-                await _updateOrderStatus('ongoing');
-                context.goBack();
+                _showBottomSheetPickupConfirmOngoing(context, currentOrder);
+
+                // await _updateOrderStatus('ongoing',currentOrder);
+                // context.goBack();
               },
               color: AppColors.primary,
               textColor: AppColors.colorWhite),
-          const SizedBox(height: 16),
+          const SizedBox(height:24),
           CustomButton(
               text: 'Reject',
               onPressed: () async {
-                await _updateOrderStatus('rejected');
+                await _updateOrderStatus('rejected',currentOrder);
                 context.goBack();
               },
               color: Colors.red.shade100,
               textColor: AppColors.textRed),
         ],
       );
-    } else if (_currentOrder.status != 'ready' && _currentOrder.status != 'rejected') {
-      return _buildStatusUpdateButton(context, theme);
-    } else if (_currentOrder.status == 'ready') {
-      return _buildReadyStatusButtons(context, theme);
+    } else if (currentOrder.status != 'ready' && currentOrder.status != 'rejected') {
+      return _buildStatusUpdateButton(context, theme,currentOrder);
     }
+    // else if (currentOrder.status == 'ready') {
+    //   return _buildReadyStatusButtons(context, theme,currentOrder);
+    // }
 
     return const SizedBox.shrink();
   }
 
-  void _showBottomSheetTimerInComing(BuildContext context, Order order) {
-    CustomBottomSheet.show(
-      context: context,
-      heightFactor: 0.4,
-      child: CountdownTimerSheet(order),
-    );
-  }
 
   void _showBottomSheetPickupConfirmOngoing(BuildContext context, Order order) {
     CustomBottomSheet.show(
@@ -356,4 +372,12 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
       child: PickupConfirmationSheet(order),
     );
   }
+  void _showBottomSheet(BuildContext context, Order order) {
+    CustomBottomSheet.show(
+      context: context,
+      heightFactor: 0.45,
+      child: CountdownTimerSheet(order),
+    );
+  }
+
 }

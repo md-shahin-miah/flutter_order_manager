@@ -11,7 +11,7 @@ extension NavigationExtension on BuildContext {
   
   // Order navigation
   void gotoOrderDetails(Order order) {
-    push(RouteNames.getOrderDetailsPath(order.id!), extra: order);
+    push(RouteNames.getOrderDetailsPath(order.id!),   extra: order);
   }
   
   void gotoAddOrder() {

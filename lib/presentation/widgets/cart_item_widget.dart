@@ -3,7 +3,7 @@ import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/domain/entities/item.dart';
 import 'package:intl/intl.dart';
 
-Widget buildItemsSection(BuildContext context, List<Item> items, ThemeData theme) {
+Widget buildItemsSection(BuildContext context, List<Item> items, ThemeData theme, bool lastViewShow) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -16,13 +16,14 @@ Widget buildItemsSection(BuildContext context, List<Item> items, ThemeData theme
           itemCount: items.length,
           itemBuilder: (context, index) {
             final item = items[index];
-            return _buildItemCard(item, theme,context);
+            return _buildItemCard(item, theme, context, index, items.length, lastViewShow);
           },
         ),
     ],
   );
 }
-Widget _buildItemCard(Item item, ThemeData theme, BuildContext context) {
+
+Widget _buildItemCard(Item item, ThemeData theme, BuildContext context, int index, int length, bool lastViewShow) {
   final currencyFormat = NumberFormat.currency(symbol: '\$');
 
   return Column(
@@ -41,27 +42,35 @@ Widget _buildItemCard(Item item, ThemeData theme, BuildContext context) {
       ),
       if (item.subItems.isNotEmpty) ...[
         ...item.subItems.map((subItem) => Padding(
-          padding: const EdgeInsets.only(left: 0, bottom: 2),
-          child: Row(
-            children: [
-              Text(
-                subItem.name,
-                style: theme.textTheme.bodySmall,
+              padding: const EdgeInsets.only(left: 0, bottom: 2),
+              child: Row(
+                children: [
+                  Text(
+                    subItem.name,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
               ),
-            ],
-          ),
-        )),
+            )),
       ],
-      Container(
-        margin: EdgeInsets.only(top: 8),
-        width: MediaQuery.of(context).size.width - 50,
-        height: 1,
-        color: AppColors.greyLight,
-      ),
+      index != length - 1
+          ? Container(
+              margin: EdgeInsets.only(top: 8),
+              width: MediaQuery.of(context).size.width - 50,
+              height: 1,
+              color: AppColors.greyLight,
+            )
+          : lastViewShow
+              ? Container(
+                  margin: EdgeInsets.only(top: 8),
+                  width: MediaQuery.of(context).size.width - 50,
+                  height: 1,
+                  color: AppColors.greyLight,
+                )
+              : SizedBox(),
       SizedBox(
         height: 10,
       )
     ],
   );
 }
-
