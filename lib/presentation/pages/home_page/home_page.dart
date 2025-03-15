@@ -35,20 +35,27 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderStateMixin {
   Isolate? _isolate;
   ReceivePort? _receivePort;
-  var _tabController;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _startOrderCreationTimer();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging || _tabController.index != ref.read(selectTabProvider)) {
+        ref.read(selectTabProvider.notifier).state = _tabController.index;
+      }
+    });
   }
 
   @override
   void dispose() {
     _stopTimer();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -298,11 +305,12 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const SizedBox(height: 16),
             // Tab content
-            const Expanded(
+             Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: ClampingScrollPhysics(),
+                  controller: _tabController,
                   children: [
                     OrderListTab(status: 'incoming'),
                     OrderListTab(status: 'ongoing'),
@@ -326,6 +334,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           onTap: () {
             DefaultTabController.of(context).index = index;
             ref.read(selectTabProvider.notifier).state = index;
+            _tabController.animateTo(index);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
