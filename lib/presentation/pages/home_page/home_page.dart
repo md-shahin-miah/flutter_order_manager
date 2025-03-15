@@ -177,7 +177,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 12.0),
-                      color: rushMode ? AppColors.selectedSurface : AppColors.surface,
+                      color: rushMode ? AppColors.selectedSurface : AppColors.surfaceLight,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -204,7 +204,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                       ref.read(rushModeProvider.notifier).state = false;
                     },
                     child: Container(
-                      color: !rushMode ? AppColors.selectedSurface : AppColors.surface,
+                      color: !rushMode ? AppColors.selectedSurface : AppColors.surfaceLight,
                       padding: EdgeInsets.symmetric(vertical: 12.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
