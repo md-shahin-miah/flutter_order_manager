@@ -45,7 +45,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             Order order = state.extra as Order;
             return OrderDetailPage(order: order, orderId: state.pathParameters['orderId']!);
           }
-          // builder: (context, state) => OrderDetailPage(order: order, orderId: orderId),
           ),
     ],
   );

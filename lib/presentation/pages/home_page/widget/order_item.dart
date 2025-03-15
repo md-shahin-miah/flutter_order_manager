@@ -23,34 +23,33 @@ class OrderListItem extends ConsumerWidget {
     // Calculate minutes since creation
     final minutesSinceCreation = DateTime.now().difference(order.createdTime).inMinutes;
 
-    return InkWell(
-      onTap: () {
+    return Container(
+      decoration: BoxDecoration(
+        color: isInReady ? AppColors.primary: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: isInReady? AppColors.primary.withOpacity(0.1): Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: InkWell(
+        onTap: () {
+          ref.read(selectedOrderProvider.notifier).state = order;
 
-        ref.read(selectedOrderProvider.notifier).state = order;
+          if(isInReady){
+            _showBottomSheet(context,order);
+          }
+          else{
+            context.gotoOrderDetails(order);
 
-        if(isInReady){
-          _showBottomSheet(context,order);
-        }
-        else{
-          context.gotoOrderDetails(order);
+          }
 
-        }
-
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: isInReady ? AppColors.primary: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: isInReady? AppColors.primary.withOpacity(0.1): Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
