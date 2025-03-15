@@ -16,6 +16,7 @@ class CountdownTimerSheet extends StatelessWidget {
     final timeDifference = order.createdTime.difference(order.pickupTime).inMinutes.abs();
     final timePassed = DateTime.now().difference(order.createdTime).inMinutes.abs();
 
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -55,7 +56,7 @@ class CountdownTimerSheet extends StatelessWidget {
                       children: [
                         CircularProgressIndicator(
 
-                          value:timeDifference/timePassed>1.0?0.4:timeDifference/timePassed,
+                          value:timePassed/timeDifference>1.0?0.7:timePassed/timeDifference,
                           strokeWidth: 8,
                           backgroundColor: Colors.grey.shade200,
                           valueColor: const AlwaysStoppedAnimation<Color>(AppColors.colorGreenAccent),
