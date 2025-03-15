@@ -41,3 +41,8 @@ The project follows Clean Architecture principles with the following layers:
     Method Channels: Native platform integration for sound
     Isolates: Background processing for order creation timer 
     Google Fonts: Typography with Inter font family
+
+#IDE Used
+
+    Android studio: Android 
+    Xcode: IOS
