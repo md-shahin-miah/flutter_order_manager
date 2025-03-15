@@ -126,7 +126,7 @@ class OrderDetailsSheet extends StatelessWidget {
                             ),
                             Text(
                               "(${getTimeString(order.orderMakingFinishTime)})",
-                              style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                              style: theme.textTheme.bodyMedium?.copyWith(color:AppColors.textLight),
                             )
                           ],
                         ),
@@ -149,18 +149,20 @@ class OrderDetailsSheet extends StatelessWidget {
                           children: [
                             Text(
                               'Pickup in',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
+                            style: theme.textTheme.bodyMedium?.copyWith(color:AppColors.textLight),
                             ),
-                            Text(
-                              '$minutesWillPickup min (${getTimeString(order.pickupTime)})',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.deepOrange,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  '$minutesWillPickup min ',
+                                    style: theme.textTheme.bodyMedium?.copyWith(color:AppColors.primary),
+
+                                ),
+                                Text(
+                                  '(${getTimeString(order.pickupTime)})',
+                                    style: theme.textTheme.bodyMedium?.copyWith(color:AppColors.textLight),
+                                ),
+                              ],
                             ),
                           ],
                         ),

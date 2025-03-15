@@ -3,6 +3,7 @@ import 'package:flutter_order_manager/core/router/go_route_context_extension.dar
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
+import 'package:flutter_order_manager/presentation/pages/home_page/widget/order_list_tab.dart';
 import 'package:flutter_order_manager/presentation/pages/order_details_page/order_detail_page.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/custom_bottom_sheet.dart';
@@ -21,7 +22,6 @@ class OrderListItem extends ConsumerWidget {
     final theme = Theme.of(context);
 
     // Calculate minutes since creation
-    final minutesSinceCreation = DateTime.now().difference(order.createdTime).inMinutes;
 
     return Container(
       decoration: BoxDecoration(
@@ -141,22 +141,27 @@ class OrderListItem extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 // Timer circle
-                CircularPercentIndicator(
-                  radius: 25.0,
-                  animation: false,
-                  animationDuration: 1200,
-                  lineWidth: 5.0,
-                  percent: minutesSinceCreation/30>1.0?0.4:minutesSinceCreation/30,
-                  center: Text(
-                    '$minutesSinceCreation',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                Consumer(
+                  builder: (context, ref, child) {
+                    final minutesSinceCreation = DateTime.now().difference(order.createdTime).inMinutes;
+                    ref.watch(timerUpdateProviderHome);
+                    return CircularPercentIndicator(
+                    radius: 25.0,
+                    animation: false,
+                    animationDuration: 1200,
+                    lineWidth: 5.0,
+                    percent: minutesSinceCreation/30>1.0?0.4:minutesSinceCreation/30,
+                    center: Text(
+                      '$minutesSinceCreation',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
-                  ),
-                  circularStrokeCap: CircularStrokeCap.butt,
-                  backgroundColor: AppColors.surface,
-                  progressColor: Colors.teal,
+                    circularStrokeCap: CircularStrokeCap.butt,
+                    backgroundColor: AppColors.surface,
+                    progressColor: Colors.teal,
+                  );}
                 ),
               ]
 

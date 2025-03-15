@@ -14,6 +14,8 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import 'order_item.dart';
 
+final timerUpdateProviderHome=StateProvider((ref) => 0);
+
 class OrderListTab extends ConsumerStatefulWidget {
   final String status;
 
@@ -31,7 +33,9 @@ class _OrderListTabState extends ConsumerState<OrderListTab> {
     super.initState();
     // Update the UI every minute to refresh the time differences
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) setState(() {});
+      if (mounted){
+        ref.read(timerUpdateProviderHome.notifier).state= ref.read(timerUpdateProviderHome)+1;
+      }
     });
   }
 
