@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:flutter_order_manager/data/datasources/order_local_data_source.dart';
+import 'package:flutter_order_manager/data/datasources/local/order_local_data_source.dart';
 import 'package:flutter_order_manager/data/repositories/order_repository_impl.dart';
 import 'package:flutter_order_manager/domain/repositories/order_repository.dart';
 import 'package:flutter_order_manager/domain/usecases/order_usecases.dart';
@@ -9,9 +9,7 @@ import 'package:flutter_order_manager/core/services/sound_service.dart';
 final GetIt getIt = GetIt.instance;
 
 void setupServiceLocator() {
-  // Router
-  getIt.registerSingleton<AppRouter>(AppRouter());
-  
+
   // Services
   getIt.registerLazySingleton<SoundService>(() => SoundService());
   

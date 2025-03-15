@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
-import 'package:flutter_order_manager/presentation/pages/order_form_page.dart';
+import 'package:flutter_order_manager/presentation/pages/create_order_page/order_form_page.dart';
+import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_item.dart';
+import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_item_rush.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_order_manager/presentation/widgets/order_list_tab.dart';
-import 'package:flutter_order_manager/core/router/navigation_extension.dart';
+import 'package:flutter_order_manager/presentation/pages/order_details_page/widget/order_list_tab.dart';
 import 'dart:isolate';
 import 'dart:async';
 import 'package:flutter_order_manager/domain/entities/order.dart';
@@ -35,7 +37,7 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   Isolate? _isolate;
   ReceivePort? _receivePort;
   late TabController _tabController;
@@ -213,12 +215,13 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      ref.read(rushModeProvider.notifier).state = !rushMode;
+                      ref.read(rushModeProvider.notifier).state = true;
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 12.0),
                       color: rushMode ? AppColors.selectedSurface : AppColors.surface,
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
@@ -228,7 +231,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                           const SizedBox(width: 8),
                           Text(
                             'Enable Rushmode',
-                            style: theme.textTheme.bodyMedium?.copyWith(
+                            style: theme.textTheme.bodySmall?.copyWith(
                               color: rushMode ? theme.colorScheme.primary : Colors.grey,
                             ),
                           ),
@@ -240,7 +243,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      ref.read(rushModeProvider.notifier).state = !rushMode;
+                      ref.read(rushModeProvider.notifier).state = false;
                     },
                     child: Container(
                       color: !rushMode ? AppColors.selectedSurface : AppColors.surface,
@@ -250,17 +253,15 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-
-                            child: Icon(size: 12,!rushMode ?Icons.circle:Icons.circle_outlined,color:!rushMode? AppColors.success:AppColors.textSecondary),
-                            // decoration: BoxDecoration(
-                            //   shape: BoxShape.circle,
-                            //   color: !rushMode ? Colors.green : Colors.red,
-                            // ),
+                            child: Icon(
+                                size: 12,
+                                !rushMode ? Icons.circle : Icons.circle_outlined,
+                                color: !rushMode ? AppColors.success : AppColors.textSecondary),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Restaurant open',
-                            style: theme.textTheme.bodyMedium,
+                            style: theme.textTheme.bodySmall,
                           ),
                         ],
                       ),
@@ -269,112 +270,73 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 ),
               ],
             ),
+          rushMode?  Container(
+              width: MediaQuery.of(context).size.width,
+              color: AppColors.primary,
+              height: 40,
+              child: Center(child: Text("You are in RushMode",style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight:FontWeight.bold,color: AppColors.colorWhite),)),
+            ):SizedBox(),
+
             SizedBox(
               height: 15,
             ),
             // Custom tab bar
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    _buildTab(
-                      'Incoming',
-                      incomingCount,
-                      theme,
-                      0,
+            !rushMode
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          buildTab('Incoming', incomingCount, theme, 0),
+                          const SizedBox(width: 8),
+                          buildTab('Outgoing', ongoingCount, theme, 1),
+                          const SizedBox(width: 8),
+                          buildTab('Ready', readyCount, theme, 2),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    _buildTab(
-                      'Outgoing',
-                      ongoingCount,
-                      theme,
-                      1,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          buildTabRush('Incoming', incomingCount, theme, 0, rushMode),
+                          const SizedBox(width: 8),
+                          buildTabRush('Outgoing', ongoingCount, theme, 1, rushMode),
+                          const SizedBox(width: 8),
+                          buildTabRush('Ready', readyCount, theme, 2, rushMode),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    _buildTab(
-                      'Ready',
-                      readyCount,
-                      theme,
-                      2,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
             const SizedBox(height: 16),
             // Tab content
-             Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: TabBarView(
-                  physics: ClampingScrollPhysics(),
-                  controller: _tabController,
-                  children: [
-                    OrderListTab(status: 'incoming'),
-                    OrderListTab(status: 'ongoing'),
-                    OrderListTab(status: 'ready'),
-                  ],
-                ),
-              ),
-            ),
+            !rushMode
+                ? Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TabBarView(
+                        physics: BouncingScrollPhysics(),
+                        controller: _tabController,
+                        children: [
+                          OrderListTab(status: 'incoming'),
+                          OrderListTab(status: 'ongoing'),
+                          OrderListTab(status: 'ready'),
+                        ],
+                      ),
+                    ),
+                  )
+                : SizedBox(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTab(String title, int count, ThemeData theme, int index) {
-    return Consumer(builder: (context, ref, child) {
-      final selectedIndex = ref.watch(selectTabProvider);
-
-      return Expanded(
-        child: InkWell(
-          onTap: () {
-            DefaultTabController.of(context).index = index;
-            ref.read(selectTabProvider.notifier).state = index;
-            _tabController.animateTo(index);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: selectedIndex == index ? theme.colorScheme.primary : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: selectedIndex == index ? theme.colorScheme.primary : Colors.grey.shade300,
-              ),
-            ),
-            child: Row(
-
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-
-              children: [
-
-                Text(
-                  '$title',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: selectedIndex == index ? AppColors.colorWhite : theme.colorScheme.onSurface,
-
-                  ),
-                ),
-
-                Text(
-                  ' $count',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: selectedIndex == index ? AppColors.colorWhite : theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
+  @override
+  bool get wantKeepAlive => true;
 }

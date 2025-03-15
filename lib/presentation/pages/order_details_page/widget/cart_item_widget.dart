@@ -33,9 +33,17 @@ Widget _buildItemCard(Item item, ThemeData theme, BuildContext context, int inde
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(
-              '${item.quantity} x ${item.name}',
-              style: theme.textTheme.titleMedium?.copyWith(),
+            child: Row(
+              children: [
+                Text(
+                  '${item.quantity} x ',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  item.name,
+                  style: theme.textTheme.titleMedium?.copyWith(),
+                )
+              ],
             ),
           ),
         ],

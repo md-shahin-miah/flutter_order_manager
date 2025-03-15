@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'package:flutter_order_manager/core/di/service_locator.dart';
 import 'package:flutter_order_manager/core/services/sound_service.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/presentation/widgets/app_button.dart';
-import 'package:flutter_order_manager/core/router/navigation_extension.dart';
 
 // Provider to track new orders
 final newOrderProvider = StateProvider<Order?>((ref) => null);
@@ -105,18 +105,15 @@ class _NewOrderBannerState extends ConsumerState<NewOrderBanner>
                     ),
                   ),
                   AppButton(
-                    text: 'View',
+                    text: 'Got it',
                     variant: AppButtonVariant.secondary,
                     size: AppButtonSize.small,
                     onPressed: () {
                       // Stop sound
                       getIt<SoundService>().stopSound();
-                      
+
                       // Clear the new order
                       ref.read(newOrderProvider.notifier).state = null;
-                      
-                      // Navigate to order details
-                      context.gotoOrderDetails(newOrder);
                     },
                   ),
                 ],

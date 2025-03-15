@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/di/service_locator.dart';
-import 'package:flutter_order_manager/core/router/navigation_extension.dart';
+import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'package:flutter_order_manager/domain/usecases/order_usecases.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
-import 'package:flutter_order_manager/presentation/widgets/custom_button.dart';
+import 'package:flutter_order_manager/presentation/widgets/common/custom_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'base_bottom_sheet.dart';
 
@@ -150,17 +150,17 @@ class TimeSelectionSheet extends StatelessWidget {
             ));
   }
 
-  Future<void> updateOrderStatus(String nextStatus, Order _currentOrder, WidgetRef ref, BuildContext context, String time) async {
+  Future<void> updateOrderStatus(String nextStatus, Order currentOrder, WidgetRef ref, BuildContext context, String time) async {
     final updateOrderStatus = getIt<UpdateOrderStatusUseCase>();
-    final currentTime = DateTime.now();
-    final pickupTime = currentTime.add( Duration(minutes:int.parse(time)));
+
+    final pickupTime = currentOrder.pickupTime.add( Duration(minutes:int.parse(time)));
     final deliveryTime = pickupTime.add(const Duration(minutes: 30));
 
-    _currentOrder.pickupTime = pickupTime;
-    _currentOrder.deliveryTime = deliveryTime;
+    currentOrder.pickupTime = pickupTime;
+    currentOrder.deliveryTime = deliveryTime;
 
-    await updateOrderStatus.execute(_currentOrder, nextStatus);
-    ref.invalidate(orderByIdProvider(_currentOrder.id!));
+    await updateOrderStatus.execute(currentOrder, nextStatus);
+    ref.invalidate(orderByIdProvider(currentOrder.id!));
     context.goBack();
 
     // Refresh the lists

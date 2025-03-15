@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/countdown_timer_sheet.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/custom_bottom_sheet.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/order_details_sheet.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/pickup_confirmation_sheet.dart';
-import 'package:flutter_order_manager/presentation/widgets/cart_item_widget.dart';
-import 'package:flutter_order_manager/presentation/widgets/custom_button.dart';
-import 'package:flutter_order_manager/presentation/widgets/message_bubble.dart';
+import 'package:flutter_order_manager/presentation/pages/order_details_page/widget/cart_item_widget.dart';
+import 'package:flutter_order_manager/presentation/widgets/common/custom_button.dart';
+import 'package:flutter_order_manager/presentation/widgets/common/message_bubble.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'package:flutter_order_manager/domain/entities/item.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_order_manager/core/di/service_locator.dart';
 import 'package:flutter_order_manager/domain/usecases/order_usecases.dart';
-import 'package:flutter_order_manager/core/router/navigation_extension.dart';
 import 'package:intl/intl.dart';
 
 class OrderDetailPage extends ConsumerStatefulWidget {
   final Order order;
-  final int orderId;
+  final String orderId;
 
   const OrderDetailPage({
     super.key,
@@ -33,6 +33,8 @@ class OrderDetailPage extends ConsumerStatefulWidget {
 
 class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
   // late Order _currentOrder;
+
+
 
   @override
   void initState() {
@@ -51,7 +53,7 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy - HH:mm');
 
-    final orderAsync = ref.watch(orderByIdProvider(widget.orderId));
+    final orderAsync = ref.watch(orderByIdProvider(widget.order.id!));
     return orderAsync.when(
       data: (currentOrder) {
         if (currentOrder == null) {
@@ -338,8 +340,6 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
               onPressed: () async {
                 _showBottomSheetPickupConfirmOngoing(context, currentOrder);
 
-                // await _updateOrderStatus('ongoing',currentOrder);
-                // context.goBack();
               },
               color: AppColors.primary,
               textColor: AppColors.colorWhite),

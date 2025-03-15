@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
@@ -44,7 +45,8 @@ class OrderListItem extends ConsumerWidget {
             _showBottomSheet(context,order);
           }
           else{
-            context.push('/order/${order.id}', extra: order);
+            context.gotoOrderDetails(order);
+            // context.push('/order/${order.id}', extra: order);
 
           }
         },

@@ -10,14 +10,14 @@ class OrderCard extends StatelessWidget {
   final bool isInDelivery;
 
   const OrderCard({
-    Key? key,
+    super.key,
     required this.orderNumber,
     required this.customerName,
     required this.phoneNumber,
     required this.time,
     required this.remainingTime,
     required this.isInDelivery,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_order_manager/core/router/navigation_extension.dart';
+import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
-import 'package:flutter_order_manager/presentation/widgets/cart_item_widget.dart';
-import 'package:flutter_order_manager/presentation/widgets/message_bubble.dart';
+import 'package:flutter_order_manager/presentation/pages/order_details_page/widget/cart_item_widget.dart';
+import 'package:flutter_order_manager/presentation/widgets/common/message_bubble.dart';
 import 'base_bottom_sheet.dart';
 
 class OrderDetailsSheet extends StatelessWidget {

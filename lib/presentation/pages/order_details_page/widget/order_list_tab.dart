@@ -12,7 +12,7 @@ import 'package:flutter_order_manager/presentation/providers/order_providers.dar
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
-import '../pages/home_page/widget/order_item.dart';
+import '../../home_page/widget/order_item.dart';
 
 class OrderListTab extends ConsumerStatefulWidget {
   final String status;
