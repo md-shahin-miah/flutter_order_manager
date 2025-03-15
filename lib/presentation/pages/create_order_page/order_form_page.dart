@@ -253,12 +253,12 @@ class _OrderFormPageState extends ConsumerState<OrderFormPage> {
         
         if (context.mounted) {
           context.gotoHomePage();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(isNewOrder ? 'Order added successfully' : 'Order updated successfully',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
-              backgroundColor: AppColors.primary,)
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text(isNewOrder ? 'Order added successfully' : 'Order updated successfully',
+          //       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
+          //     backgroundColor: AppColors.primary,)
+          // );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

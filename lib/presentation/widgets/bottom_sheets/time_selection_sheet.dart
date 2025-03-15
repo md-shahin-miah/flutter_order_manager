@@ -62,8 +62,8 @@ class TimeSelectionSheet extends StatelessWidget {
                       _buildTimeOption('7', 'mins', AppColors.colorGreenLight, order.id!),
                       _buildTimeOption('10', 'mins', AppColors.colorGreenLight, order.id!),
                       _buildTimeOption('15', 'mins', AppColors.colorGreenLight, order.id!),
-                      _buildTimeOption('20', 'mins', AppColors.secondarySurfaceLightBt, order.id!),
-                      _buildTimeOption('30', 'mins', AppColors.secondarySurfaceLightBt, order.id!),
+                      _buildTimeOption('20', 'mins', AppColors.secondarySurfaceLightDeep, order.id!),
+                      _buildTimeOption('30', 'mins', AppColors.secondarySurfaceLightDeep, order.id!),
                     ],
                   ),
                   SizedBox(
@@ -161,6 +161,7 @@ class TimeSelectionSheet extends StatelessWidget {
 
     await updateOrderStatus.execute(currentOrder, nextStatus);
     ref.invalidate(orderByIdProvider(currentOrder.id!));
+    ref.invalidate(selectedTimeProvider);
     context.goBack();
 
     // Refresh the lists

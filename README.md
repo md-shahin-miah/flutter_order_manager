@@ -21,6 +21,7 @@ Flutter Order Manager is a mobile application designed for restaurants and food 
     Order Rejection: Ability to reject orders with appropriate status tracking using SQLite
 
 
+#Might have color issues due to usage of color picker extension
 
 #Architecture
 

@@ -67,7 +67,7 @@ class _OrderListTabState extends ConsumerState<OrderListTab> {
             itemCount: orders.length,
             itemBuilder: (context, index) {
               final order = orders[index];
-              return OrderListItem(order: order, isInDelivery: widget.status == "ready");
+              return OrderListItem(order: order, isInReady: widget.status == "ready");
             },
           ),
         );

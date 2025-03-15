@@ -12,9 +12,9 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 class OrderListItem extends ConsumerWidget {
   final Order order;
-  bool isInDelivery = false;
+  bool isInReady = false;
 
-  OrderListItem({super.key, required this.order, required this.isInDelivery});
+  OrderListItem({super.key, required this.order, required this.isInReady});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,33 +23,34 @@ class OrderListItem extends ConsumerWidget {
     // Calculate minutes since creation
     final minutesSinceCreation = DateTime.now().difference(order.createdTime).inMinutes;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isInDelivery ? AppColors.primary: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: isInDelivery? AppColors.primary.withOpacity(0.1): Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: InkWell(
-        onTap: () {
-          ref.read(selectedOrderProvider.notifier).state = order;
+    return InkWell(
+      onTap: () {
 
-          if(isInDelivery){
-            _showBottomSheet(context,order);
-          }
-          else{
-            context.gotoOrderDetails(order);
-            // context.push('/order/${order.id}', extra: order);
+        ref.read(selectedOrderProvider.notifier).state = order;
 
-          }
-        },
+        if(isInReady){
+          _showBottomSheet(context,order);
+        }
+        else{
+          context.gotoOrderDetails(order);
+
+        }
+
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: isInReady ? AppColors.primary: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: isInReady? AppColors.primary.withOpacity(0.1): Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -64,7 +65,7 @@ class OrderListItem extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
                           decoration: BoxDecoration(
-                            color:isInDelivery?AppColors.colorWhite : AppColors.surfaceLight,
+                            color:isInReady?AppColors.colorWhite : AppColors.surfaceLight,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -78,7 +79,7 @@ class OrderListItem extends ConsumerWidget {
                           child: Text(
                             order.customerName ,
                             style: theme.textTheme.bodyMedium
-                                ?.copyWith(color:isInDelivery?AppColors.colorWhite: AppColors.textPrimary, fontWeight: FontWeight.bold),
+                                ?.copyWith(color:isInReady?AppColors.colorWhite: AppColors.textPrimary, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(width: 2),
@@ -88,13 +89,13 @@ class OrderListItem extends ConsumerWidget {
                     Text(
                       '+${order.customerMobile}',
                       style:
-                      theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color:isInDelivery?AppColors.colorWhite : AppColors.textLight),
+                      theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color:isInReady?AppColors.colorWhite : AppColors.textLight),
                     ),
                   ],
                 ),
               ),
 
-              if (isInDelivery) ...[
+              if (isInReady) ...[
                 Expanded(
                   flex: 3,
                   child: Row(
