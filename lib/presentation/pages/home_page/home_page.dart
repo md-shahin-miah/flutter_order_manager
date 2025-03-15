@@ -247,14 +247,15 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                       padding: EdgeInsets.symmetric(vertical: 12.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: !rushMode ? Colors.green : Colors.red,
-                            ),
+                          SizedBox(
+
+                            child: Icon(size: 12,!rushMode ?Icons.circle:Icons.circle_outlined,color:!rushMode? AppColors.success:AppColors.textSecondary),
+                            // decoration: BoxDecoration(
+                            //   shape: BoxShape.circle,
+                            //   color: !rushMode ? Colors.green : Colors.red,
+                            // ),
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -345,13 +346,31 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 color: selectedIndex == index ? theme.colorScheme.primary : Colors.grey.shade300,
               ),
             ),
-            child: Text(
-              '$title $count',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: selectedIndex == index ? Colors.white : theme.colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: [
+
+                Text(
+                  '$title',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: selectedIndex == index ? AppColors.colorWhite : theme.colorScheme.onSurface,
+
+                  ),
+                ),
+
+                Text(
+                  ' $count',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: selectedIndex == index ? AppColors.colorWhite : theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
             ),
           ),
         ),
