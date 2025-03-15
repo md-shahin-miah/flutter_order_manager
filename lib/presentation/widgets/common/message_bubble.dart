@@ -13,7 +13,7 @@ class MessageBubble extends StatelessWidget {
   const MessageBubble({
     Key? key,
     required this.message,
-    this.backgroundColor = const Color(0xFFF8E8DD),
+    this.backgroundColor = const Color(0xFFF5D0D0),
     this.textColor = const Color(0xFF4A4A4A),
     this.borderRadius = 12.0,
     this.padding = const EdgeInsets.all(16.0),

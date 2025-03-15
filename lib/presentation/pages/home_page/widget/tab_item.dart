@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Widget buildTab(String title, int count, ThemeData theme, int index) {
   return Consumer(builder: (context, ref, child) {
     final selectedIndex = ref.watch(selectTabProvider);
-
     return Expanded(
       child: InkWell(
         onTap: () {

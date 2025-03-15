@@ -30,7 +30,7 @@ class OrderDetailsSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
-                onPressed: () => context.goBack,
+                onPressed: () => context.goBack(),
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -114,7 +114,7 @@ class OrderDetailsSheet extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               '$minutesSinceReady min ago',
@@ -131,10 +131,17 @@ class OrderDetailsSheet extends StatelessWidget {
                           ],
                         ),
                         const Spacer(),
-                        const Icon(
-                          Icons.delivery_dining,
-                          color: Colors.deepOrange,
-                          size: 24,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(
+                            Icons.delivery_dining_outlined,
+                            color: Colors.deepOrange,
+                            size: 24,
+                          ),
                         ),
                         const SizedBox(width: 8),
                          Column(

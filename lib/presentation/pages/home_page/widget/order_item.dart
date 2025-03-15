@@ -168,7 +168,7 @@ class OrderListItem extends ConsumerWidget {
   void _showBottomSheet(BuildContext context, Order order) {
     CustomBottomSheet.show(
       context: context,
-      heightFactor: 0.35,
+      heightFactor: 0.65,
       child: OrderDetailsSheet(order),
     );
   }

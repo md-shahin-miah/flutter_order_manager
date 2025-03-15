@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
+import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/presentation/pages/create_order_page/order_form_page.dart';
 import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_item.dart';
 import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_item_rush.dart';
@@ -21,6 +22,7 @@ import 'package:flutter_order_manager/domain/entities/sub_item.dart';
 // State provider for rush mode
 final rushModeProvider = StateProvider<bool>((ref) => false);
 final selectTabProvider = StateProvider<int>((ref) => 0);
+final selectTabProviderRush = StateProvider<int>((ref) => 0);
 
 // Message class for Isolate communication
 class IsolateMessage {
@@ -37,27 +39,20 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMixin {
   Isolate? _isolate;
   ReceivePort? _receivePort;
-  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _startOrderCreationTimer();
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging || _tabController.index != ref.read(selectTabProvider)) {
-        ref.read(selectTabProvider.notifier).state = _tabController.index;
-      }
-    });
+
   }
 
   @override
   void dispose() {
     _stopTimer();
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -65,7 +60,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     _receivePort = ReceivePort();
     _isolate = await Isolate.spawn(
       _timerIsolate,
-      IsolateMessage(_receivePort!.sendPort, 120), // 2 minutes interval
+      IsolateMessage(_receivePort!.sendPort, 300), // 2 minutes interval
     );
 
     _receivePort!.listen((message) {
@@ -90,7 +85,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
   Future<void> _createRandomOrder() async {
     try {
       // Generate random items with subitems
-      final items = _generateRandomItems(2); // Generate 2 random items
+      final items = generateRandomItems(2); // Generate 2 random items
 
       // Set times
       final createdTime = DateTime.now();
@@ -129,49 +124,12 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     }
   }
 
-  // Add this method to generate random items
-  List<Item> _generateRandomItems(int count) {
-    final foodNames = ['Pizza', 'Burger', 'Pasta', 'Salad', 'Sandwich', 'Taco', 'Sushi', 'Soup'];
-    final ingredients = ['Cheese', 'Tomato', 'Lettuce', 'Onion', 'Mushroom', 'Pepperoni', 'Chicken', 'Beef', 'Bacon'];
-
-    final random = Random();
-    final items = <Item>[];
-
-    for (int i = 0; i < count; i++) {
-      // Generate random subitems (ingredients)
-      final subItemCount = random.nextInt(4) + 1; // 1-4 ingredients
-      final subItems = <SubItem>[];
-
-      for (int j = 0; j < subItemCount; j++) {
-        final ingredient = ingredients[random.nextInt(ingredients.length)];
-        final quantity = random.nextInt(10) + 1; // 1-10 quantity
-
-        subItems.add(SubItem(
-          name: ingredient,
-          quantity: quantity,
-        ));
-      }
-
-      // Create the item
-      final foodName = foodNames[random.nextInt(foodNames.length)];
-      final quantity = random.nextInt(3) + 1; // 1-3 quantity
-      final price = (random.nextInt(1500) + 500) / 100; // $5.00-$20.00
-
-      items.add(Item(
-        name: foodName,
-        quantity: quantity,
-        price: price,
-        subItems: subItems,
-      ));
-    }
-
-    return items;
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final rushMode = ref.watch(rushModeProvider);
+
 
     // Watch the order counts
     final incomingOrdersAsync = ref.watch(incomingOrdersProvider);
@@ -231,8 +189,8 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                           const SizedBox(width: 8),
                           Text(
                             'Enable Rushmode',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: rushMode ? theme.colorScheme.primary : Colors.grey,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: rushMode ? theme.colorScheme.primary : Colors.grey
                             ),
                           ),
                         ],
@@ -261,7 +219,8 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                           const SizedBox(width: 8),
                           Text(
                             'Restaurant open',
-                            style: theme.textTheme.bodySmall,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: !rushMode ? AppColors.textPrimary : Colors.grey),
                           ),
                         ],
                       ),
@@ -320,8 +279,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: TabBarView(
-                        physics: BouncingScrollPhysics(),
-                        controller: _tabController,
+                        physics: NeverScrollableScrollPhysics(),
                         children: [
                           OrderListTab(status: 'incoming'),
                           OrderListTab(status: 'ongoing'),
@@ -336,7 +294,56 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
       ),
     );
   }
+  Widget buildTab(String title, int count, ThemeData theme, int index) {
+    return Consumer(builder: (context, ref, child) {
+      final selectedIndex = ref.watch(selectTabProvider);
 
-  @override
-  bool get wantKeepAlive => true;
+      return Expanded(
+        child: InkWell(
+          onTap: () {
+            DefaultTabController.of(context).index = index;
+            ref.read(selectTabProvider.notifier).state = index;
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: selectedIndex == index ? theme.colorScheme.primary : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: selectedIndex == index ? theme.colorScheme.primary : Colors.grey.shade300,
+              ),
+            ),
+            child: Row(
+
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+
+              children: [
+
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: selectedIndex == index ? AppColors.colorWhite : AppColors.textLight,
+
+                  ),
+                ),
+
+                Text(
+                  ' $count',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: selectedIndex == index ? AppColors.colorWhite : AppColors.textLight,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+
 }

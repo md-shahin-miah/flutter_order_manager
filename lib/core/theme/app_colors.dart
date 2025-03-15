@@ -14,10 +14,11 @@ class AppColors {
   static const selectedSurface = Color(0xFFede8e5 );
   static const secondarySurfaceLight = Color(0xFFFEEADD);
   static const secondarySurfaceLightBt = Color(0xFFFFE4D8);
-  static const secondarySurfaceLightDeep = Color(0xFFFEEADD);
-  static const secondarySurface = Color(0xFFFAE9DD);
+  static const secondarySurfaceLightDeep = Color(0xFFFDE0E0);
+  static const secondarySurface = Color(0xFFFAEBEB);
 
   static const colorGreenLight = Color(0xFFE6F9EF);
+  static const colorGreenAccent = Color(0xFF21DEA4);
 
   // Text Colors
   static const textPrimary = Color(0xFF1F2937);

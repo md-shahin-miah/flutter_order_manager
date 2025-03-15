@@ -15,6 +15,7 @@ Flutter Order Manager is a mobile application designed for restaurants and food 
     Real-time Order Timer: Visual countdown showing how long orders have been in the system
     Order Details: View comprehensive order information including items, prices, and customer notes
     Customer Management: Store and access customer contact information
+    Create order: Processing a 5 minutes interval task to create random orders.
     Sound Notifications: Audio alerts for new orders using native platform integration
     Overlay blink: A view with sound on the bottom will blink until user click it (Sound and view will close when user clicked)
     Order Rejection: Ability to reject orders with appropriate status tracking using SQLite
@@ -37,5 +38,5 @@ The project follows Clean Architecture principles with the following layers:
     GetIt: Dependency injection
     Go Router: Navigation management
     Method Channels: Native platform integration for sound
-    Isolates: Background processing for order creation timer
+    Isolates: Background processing for order creation timer 
     Google Fonts: Typography with Inter font family

@@ -6,13 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget buildTabRush(String title, int count, ThemeData theme, int index, bool rushMode) {
   return Consumer(builder: (context, ref, child) {
-    final selectedIndex = ref.watch(selectTabProvider);
+    final selectedIndex = ref.watch(selectTabProviderRush);
 
     return Expanded(
       child: InkWell(
         onTap: () {
           DefaultTabController.of(context).index = index;
-          ref.read(selectTabProvider.notifier).state = index;
+          ref.read(selectTabProviderRush.notifier).state = index;
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
