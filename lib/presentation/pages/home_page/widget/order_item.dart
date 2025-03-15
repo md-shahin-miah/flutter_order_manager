@@ -3,11 +3,11 @@ import 'package:flutter_order_manager/core/router/go_route_context_extension.dar
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_order_manager/core/utils/utils.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
+import 'package:flutter_order_manager/presentation/pages/order_details_page/order_detail_page.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/custom_bottom_sheet.dart';
 import 'package:flutter_order_manager/presentation/widgets/bottom_sheets/order_details_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class OrderListItem extends ConsumerWidget {
@@ -39,6 +39,7 @@ class OrderListItem extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: InkWell(
         onTap: () {
+          ref.invalidate(timeToUpdate);
           ref.read(selectedOrderProvider.notifier).state = order;
 
           if(isInReady){

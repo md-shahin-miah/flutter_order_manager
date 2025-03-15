@@ -28,7 +28,7 @@ class TimeSelectionSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                onPressed: () =>context.goBack,
+                onPressed: () =>context.goBack(),
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -92,8 +92,8 @@ class TimeSelectionSheet extends StatelessWidget {
   }
 
   Widget _buildTimeOption(String time, String unit, Color backgroundColor, int id) {
-    final bool isGreen = backgroundColor == const Color(0xFFE6F9EF);
-    final bool isOrange = backgroundColor == const Color(0xFFFEEADD);
+    final bool isGreen = backgroundColor == AppColors.colorGreenLight;
+    final bool isOrange = backgroundColor ==AppColors.secondarySurfaceLightDeep;
 
     return Consumer(
         builder: (context, ref, child) => InkWell(

@@ -53,7 +53,7 @@ class CountdownTimerSheet extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         CircularProgressIndicator(
-                          value: 0.5,
+                          value: timePassed>order.pickupTime.minute.abs()?0.5:order.pickupTime.minute.abs()/timePassed,
                           strokeWidth: 8,
                           backgroundColor: Colors.grey.shade200,
                           valueColor: const AlwaysStoppedAnimation<Color>(AppColors.colorGreenAccent),

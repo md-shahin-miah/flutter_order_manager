@@ -9,7 +9,7 @@ import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_it
 import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_item_rush.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_order_manager/presentation/pages/order_details_page/widget/order_list_tab.dart';
+import 'package:flutter_order_manager/presentation/pages/home_page/widget/order_list_tab.dart';
 import 'dart:isolate';
 import 'dart:async';
 import 'package:flutter_order_manager/domain/entities/order.dart';
