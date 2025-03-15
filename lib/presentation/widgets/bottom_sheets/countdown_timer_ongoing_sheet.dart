@@ -13,6 +13,7 @@ class CountdownTimerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeLeft = DateTime.now().difference(order.pickupTime).inMinutes.abs();
+    final timeDifference = order.createdTime.difference(order.pickupTime).inMinutes.abs();
     final timePassed = DateTime.now().difference(order.createdTime).inMinutes.abs();
 
     return Padding(
@@ -53,7 +54,8 @@ class CountdownTimerSheet extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         CircularProgressIndicator(
-                          value: timePassed>order.pickupTime.minute.abs()?0.5:order.pickupTime.minute.abs()/timePassed,
+
+                          value:timeDifference/timePassed>1.0?0.4:timeDifference/timePassed,
                           strokeWidth: 8,
                           backgroundColor: Colors.grey.shade200,
                           valueColor: const AlwaysStoppedAnimation<Color>(AppColors.colorGreenAccent),
