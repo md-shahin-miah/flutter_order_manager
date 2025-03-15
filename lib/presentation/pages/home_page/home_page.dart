@@ -60,7 +60,7 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     _receivePort = ReceivePort();
     _isolate = await Isolate.spawn(
       _timerIsolate,
-      IsolateMessage(_receivePort!.sendPort, 300), // 2 minutes interval
+      IsolateMessage(_receivePort!.sendPort, 300), // 5 minutes interval
     );
 
     _receivePort!.listen((message) {
