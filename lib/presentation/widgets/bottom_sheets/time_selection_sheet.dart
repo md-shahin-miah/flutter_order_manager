@@ -170,7 +170,10 @@ class TimeSelectionSheet extends StatelessWidget {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Order moved to $nextStatus')),
+
+          SnackBar(content: Text('Order moved to $nextStatus' ,style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
+            backgroundColor: AppColors.primary,)
+
       );
     }
   }

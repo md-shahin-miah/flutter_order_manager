@@ -32,7 +32,7 @@ class PickupConfirmationSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                onPressed: () => context.goBack,
+                onPressed: () => context.goBack(),
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -104,7 +104,10 @@ class PickupConfirmationSheet extends StatelessWidget {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Order moved to $nextStatus')),
+          SnackBar(
+            content: Text('Order moved to $nextStatus',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
+            backgroundColor: AppColors.primary,)
       );
     }
   }

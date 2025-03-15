@@ -283,7 +283,9 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Order moved to $nextStatus')),
+        SnackBar(content: Text('Order moved to $nextStatus' ,style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
+        backgroundColor: AppColors.primary,
+        ),
       );
     }
   }
@@ -300,7 +302,9 @@ class _OrderDetailPageState extends ConsumerState<OrderDetailPage> {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Order status updated to $readyStatus')),
+
+          SnackBar(content: Text('Order status updated to $readyStatus' ,style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
+            backgroundColor: AppColors.primary,)
       );
     }
   }

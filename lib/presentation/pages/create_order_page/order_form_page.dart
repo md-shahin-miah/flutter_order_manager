@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/router/go_route_context_extension.dart';
+import 'package:flutter_order_manager/core/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_order_manager/domain/entities/order.dart';
 import 'package:flutter_order_manager/domain/entities/item.dart';
@@ -36,7 +37,7 @@ class _OrderFormPageState extends ConsumerState<OrderFormPage> {
   void initState() {
     super.initState();
     if (widget.order != null) {
-      _customerNoteController.text = widget.order!.customerNote;
+      _customerNoteController.text ='No onion please, I am very allergic. It would be best if no onion was handled.';
       _customerMobileController.text = widget.order!.customerMobile;
       _createdTime = widget.order!.createdTime;
       _pickupTime = widget.order!.pickupTime;
@@ -142,12 +143,12 @@ class _OrderFormPageState extends ConsumerState<OrderFormPage> {
             width: 120,
             child: Text(
               '$label:',
-              style: theme.textTheme.bodyLarge?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          Expanded(child: Text(value, style: theme.textTheme.bodyLarge)),
+          Expanded(child: Text(value, style: theme.textTheme.bodySmall)),
         ],
       ),
     );
@@ -254,10 +255,9 @@ class _OrderFormPageState extends ConsumerState<OrderFormPage> {
           context.gotoHomePage();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                isNewOrder ? 'Order added successfully' : 'Order updated successfully',
-              ),
-            ),
+              content: Text(isNewOrder ? 'Order added successfully' : 'Order updated successfully',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.colorWhite),),
+              backgroundColor: AppColors.primary,)
           );
         }
       } catch (e) {
