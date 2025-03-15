@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_order_manager/core/theme/app_colors.dart';
+import 'package:flutter_order_manager/core/utils/utils.dart';
+import 'package:flutter_order_manager/presentation/pages/home_page/widget/tab_item.dart';
 import 'package:flutter_order_manager/presentation/pages/order_form_page.dart';
 import 'package:flutter_order_manager/presentation/providers/order_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,7 +83,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   Future<void> _createRandomOrder() async {
     try {
       // Generate random items with subitems
-      final items = _generateRandomItems(2); // Generate 2 random items
+      final items = generateRandomItems(2); // Generate 2 random items
 
       // Set times
       final createdTime = DateTime.now();
@@ -120,44 +122,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  // Add this method to generate random items
-  List<Item> _generateRandomItems(int count) {
-    final foodNames = ['Pizza', 'Burger', 'Pasta', 'Salad', 'Sandwich', 'Taco', 'Sushi', 'Soup'];
-    final ingredients = ['Cheese', 'Tomato', 'Lettuce', 'Onion', 'Mushroom', 'Pepperoni', 'Chicken', 'Beef', 'Bacon'];
 
-    final random = Random();
-    final items = <Item>[];
-
-    for (int i = 0; i < count; i++) {
-      // Generate random subitems (ingredients)
-      final subItemCount = random.nextInt(4) + 1; // 1-4 ingredients
-      final subItems = <SubItem>[];
-
-      for (int j = 0; j < subItemCount; j++) {
-        final ingredient = ingredients[random.nextInt(ingredients.length)];
-        final quantity = random.nextInt(10) + 1; // 1-10 quantity
-
-        subItems.add(SubItem(
-          name: ingredient,
-          quantity: quantity,
-        ));
-      }
-
-      // Create the item
-      final foodName = foodNames[random.nextInt(foodNames.length)];
-      final quantity = random.nextInt(3) + 1; // 1-3 quantity
-      final price = (random.nextInt(1500) + 500) / 100; // $5.00-$20.00
-
-      items.add(Item(
-        name: foodName,
-        quantity: quantity,
-        price: price,
-        subItems: subItems,
-      ));
-    }
-
-    return items;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,10 +210,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           SizedBox(
 
                             child: Icon(size: 12,!rushMode ?Icons.circle:Icons.circle_outlined,color:!rushMode? AppColors.success:AppColors.textSecondary),
-                            // decoration: BoxDecoration(
-                            //   shape: BoxShape.circle,
-                            //   color: !rushMode ? Colors.green : Colors.red,
-                            // ),
+
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -273,21 +235,21 @@ class _HomePageState extends ConsumerState<HomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    _buildTab(
+                    buildTab(
                       'Incoming',
                       incomingCount,
                       theme,
                       0,
                     ),
                     const SizedBox(width: 8),
-                    _buildTab(
+                    buildTab(
                       'Outgoing',
                       ongoingCount,
                       theme,
                       1,
                     ),
                     const SizedBox(width: 8),
-                    _buildTab(
+                    buildTab(
                       'Ready',
                       readyCount,
                       theme,
@@ -318,54 +280,4 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildTab(String title, int count, ThemeData theme, int index) {
-    return Consumer(builder: (context, ref, child) {
-      final selectedIndex = ref.watch(selectTabProvider);
-
-      return Expanded(
-        child: InkWell(
-          onTap: () {
-            DefaultTabController.of(context).index = index;
-            ref.read(selectTabProvider.notifier).state = index;
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: selectedIndex == index ? theme.colorScheme.primary : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: selectedIndex == index ? theme.colorScheme.primary : Colors.grey.shade300,
-              ),
-            ),
-            child: Row(
-
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-
-              children: [
-
-                Text(
-                  '$title',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: selectedIndex == index ? AppColors.colorWhite : theme.colorScheme.onSurface,
-
-                  ),
-                ),
-
-                Text(
-                  ' $count',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: selectedIndex == index ? AppColors.colorWhite : theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
 }
